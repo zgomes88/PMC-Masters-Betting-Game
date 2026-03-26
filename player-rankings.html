@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player Rankings — The Masters 2026 Fantasy Draft</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Teko:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #1a3a2a;
+    --green-mid: #2d5a3d;
+    --green-light: #4a7c5e;
+    --green-pale: #8ab89a;
+    --gold: #c9a84c;
+    --gold-light: #e8c878;
+    --gold-pale: #f5e6b8;
+    --cream: #faf6ed;
+    --cream-dark: #f0e8d5;
+    --white: #ffffff;
+    --ink: #1a1a14;
+    --ink-mid: #3d3d30;
+    --ink-light: #7a7a60;
+    --red-flag: #8b1a1a;
+    --shadow: rgba(26,58,42,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'EB Garamond', serif;
+    background: var(--green-deep);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(74,124,94,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.06) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: relative;
+    background: linear-gradient(180deg, var(--green-deep) 0%, var(--green-mid) 100%);
+    border-bottom: 3px solid var(--gold);
+    z-index: 10;
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .header-emblem {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .emblem-circle {
+    width: 72px; height: 72px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle, rgba(201,168,76,0.15), transparent);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .emblem-circle svg { width: 44px; height: 44px; }
+
+  .header-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: var(--gold-light);
+    letter-spacing: 0.03em;
+    line-height: 1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+
+  .header-text .subtitle {
+    font-family: 'Teko', sans-serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.22em;
+    color: var(--green-pale);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .back-btn {
+    font-family: 'Teko', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border: 1.5px solid rgba(201,168,76,0.4);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--green-pale);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .back-btn:hover {
+    color: var(--gold-light);
+    border-color: var(--gold);
+  }
+
+  /* ===== MAIN ===== */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ===== SECTION HEADER ===== */
+  .section-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--gold-light);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .section-header .rule {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 14px auto;
+    max-width: 400px;
+  }
+
+  .section-header .rule::before,
+  .section-header .rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  .section-header .rule span { color: var(--gold); font-size: 1.1rem; }
+
+  .section-header p {
+    color: var(--green-pale);
+    font-size: 1.05rem;
+    font-style: italic;
+  }
+
+  /* ===== LAST UPDATED BADGE ===== */
+  .updated-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .updated-badge span {
+    font-family: 'Teko', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-pale);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 20px;
+    padding: 5px 16px;
+  }
+
+  /* ===== RANKINGS TABLE ===== */
+  .rankings-card {
+    background: var(--cream);
+    border-radius: 6px;
+    border: 1px solid rgba(201,168,76,0.25);
+    box-shadow: 0 4px 24px var(--shadow);
+    overflow: hidden;
+  }
+
+  .rankings-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .rankings-table thead {
+    background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .rankings-table thead th {
+    font-family: 'Teko', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    padding: 15px 20px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .rankings-table thead th.col-rank { text-align: center; width: 70px; }
+  .rankings-table thead th.col-points { text-align: right; }
+  .rankings-table thead th.col-price { text-align: right; }
+
+  .rankings-table tbody tr {
+    border-bottom: 1px solid #ede5ce;
+    transition: background 0.15s;
+  }
+
+  .rankings-table tbody tr:hover { background: rgba(201,168,76,0.06); }
+  .rankings-table tbody tr:last-child { border-bottom: none; }
+
+  .rankings-table td {
+    padding: 13px 20px;
+    font-size: 0.97rem;
+  }
+
+  /* Rank cell */
+  .td-rank {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink-light);
+  }
+
+  .rank-badge {
+    display: inline-flex;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+
+  tr.pos-1 .td-rank { color: var(--gold); }
+  tr.pos-2 .td-rank { color: #a8a8a0; }
+  tr.pos-3 .td-rank { color: #b87333; }
+  tr.pos-1 .rank-badge { background: rgba(201,168,76,0.15); border: 1.5px solid var(--gold); }
+  tr.pos-2 .rank-badge { background: rgba(168,168,160,0.12); border: 1.5px solid #a8a8a0; }
+  tr.pos-3 .rank-badge { background: rgba(184,115,51,0.12); border: 1.5px solid #b87333; }
+
+  /* Player cell */
+  .td-player .player-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .td-player .player-country {
+    font-family: 'Teko', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-top: 1px;
+  }
+
+  /* Price cell */
+  .td-price {
+    text-align: right;
+    font-family: 'Teko', sans-serif;
+    font-size: 1rem;
+    color: var(--green-mid);
+    letter-spacing: 0.04em;
+  }
+
+  /* Points cell */
+  .td-points {
+    text-align: right;
+    font-family: 'Teko', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--green-mid);
+  }
+
+  .td-points.zero { color: var(--ink-light); font-size: 1rem; font-weight: 400; }
+
+  /* Tied rank label */
+  .rank-tied {
+    font-family: 'Teko', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-light);
+    display: block;
+    line-height: 1;
+    margin-top: 1px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--green-pale);
+  }
+
+  .empty-state svg { margin: 0 auto 20px; display: block; opacity: 0.5; }
+
+  .empty-state h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    margin-bottom: 10px;
+    color: var(--gold-light);
+    opacity: 0.7;
+  }
+
+  .empty-state p {
+    font-style: italic;
+    font-size: 1rem;
+    opacity: 0.7;
+  }
+
+  /* ===== SCORE INDEX REFERENCE TABLE ===== */
+  .score-ref-wrap {
+    margin-top: 40px;
+  }
+
+  .score-ref-wrap h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--gold-light);
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .score-ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+  }
+
+  .score-ref-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: 4px;
+  }
+
+  .score-ref-item .ref-label {
+    font-family: 'Teko', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-pale);
+  }
+
+  .score-ref-item .ref-pts {
+    font-family: 'Teko', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+  }
+
+  .score-ref-item.ref-zero .ref-label { color: var(--ink-light); }
+  .score-ref-item.ref-zero .ref-pts   { color: var(--ink-light); font-size: 0.95rem; font-weight: 400; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 680px) {
+    .header-inner { padding: 20px 16px; }
+    .header-text h1 { font-size: 1.4rem; }
+    .emblem-circle { width: 52px; height: 52px; }
+    main { padding: 28px 16px 60px; }
+    .section-header h2 { font-size: 1.8rem; }
+    .rankings-table thead th,
+    .rankings-table td { padding: 11px 12px; }
+    .col-price, .td-price { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-emblem">
+      <div class="emblem-circle">
+        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="22" r="18" stroke="#c9a84c" stroke-width="1.5" fill="none"/>
+          <path d="M22 8 C22 8, 10 16, 10 24 C10 30 16 36 22 36 C28 36 34 30 34 24 C34 16 22 8 22 8Z" fill="rgba(74,124,94,0.35)" stroke="#c9a84c" stroke-width="1"/>
+          <path d="M22 12 L22 32 M16 22 L28 22" stroke="#c9a84c" stroke-width="1" stroke-linecap="round"/>
+          <circle cx="22" cy="22" r="3" fill="#c9a84c"/>
+          <path d="M14 18 Q22 14 30 18 Q22 22 14 18Z" fill="rgba(201,168,76,0.3)"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h1>The Masters 2026</h1>
+        <div class="subtitle">Player Rankings</div>
+      </div>
+    </div>
+    <a class="back-btn" href="masters2026.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back to Game
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="section-header">
+    <h2>Player Rankings</h2>
+    <div class="rule"><span>✦</span></div>
+    <p>Individual golfer standings & fantasy points — Masters 2026</p>
+  </div>
+
+  <div class="updated-badge">
+    <span id="last-updated-label">Loading…</span>
+  </div>
+
+  <div class="rankings-card">
+    <table class="rankings-table" id="rankings-table">
+      <thead>
+        <tr>
+          <th class="col-rank">Position</th>
+          <th class="col-player">Player</th>
+          <th class="col-price">Price</th>
+          <th class="col-points">Game Pts</th>
+        </tr>
+      </thead>
+      <tbody id="rankings-tbody">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Scoring reference table -->
+  <div class="score-ref-wrap">
+    <h3>Points Scoring Index</h3>
+    <div class="score-ref-grid" id="score-ref-grid"></div>
+  </div>
+
+</main>
+
+<script src="score-index.js"></script>
+<script>
+const STORAGE_KEY = 'masters_rankings_snapshot';
+
+function renderRankings() {
+  const raw   = localStorage.getItem(STORAGE_KEY);
+  const label = document.getElementById('last-updated-label');
+  const tbody = document.getElementById('rankings-tbody');
+
+  if (!raw) {
+    label.textContent = 'Not yet published';
+    tbody.innerHTML = `
+      <tr><td colspan="4">
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8ab89a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <h3>Rankings Not Yet Published</h3>
+          <p>The administrator has not published player scores yet.<br>Check back once the tournament is underway.</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  const snapshot = JSON.parse(raw);
+  label.textContent = 'Last updated: ' + snapshot.updatedAt;
+
+  // Sort: active players by tournament rank ascending (1st first),
+  // then CUT/WD/not-yet-played players alphabetically at the bottom.
+  const active  = snapshot.players.filter(p => p.tournamentRank != null).sort((a, b) =>
+    a.tournamentRank !== b.tournamentRank
+      ? a.tournamentRank - b.tournamentRank
+      : a.name.localeCompare(b.name)
+  );
+  const notPlayed = snapshot.players.filter(p => p.tournamentRank == null).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+  const sorted = [...active, ...notPlayed];
+
+  let html = '';
+
+  sorted.forEach(player => {
+    const hasRank  = player.tournamentRank != null;
+    const posDisp  = player.tournamentPos && player.tournamentPos !== '—'
+      ? escHtml(player.tournamentPos)
+      : (hasRank ? String(player.tournamentRank) : '—');
+
+    // Medal row classes only for outright leaders (rank 1, 2, 3 with no tie conflict)
+    const posClass = player.tournamentRank === 1 ? 'pos-1'
+                   : player.tournamentRank === 2 ? 'pos-2'
+                   : player.tournamentRank === 3 ? 'pos-3' : '';
+
+    const isCut = !hasRank && player.tournamentPos && player.tournamentPos !== '—';
+    const posLabel = hasRank
+      ? `<span class="rank-badge">${posDisp}</span>`
+      : (isCut
+          ? `<span style="font-family:'Teko',sans-serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--ink-light);">${posDisp}</span>`
+          : `<span class="rank-tied">—</span>`);
+
+    html += `
+      <tr class="${posClass}">
+        <td class="td-rank">${posLabel}</td>
+        <td class="td-player">
+          <div class="player-name">${escHtml(player.name)}</div>
+          <div class="player-country">${escHtml(player.country)}</div>
+        </td>
+        <td class="td-price">$${player.price}</td>
+        <td class="td-points${player.points === 0 ? ' zero' : ''}">${player.points === 0 ? '—' : player.points}</td>
+      </tr>`;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function renderScoreRef() {
+  const grid = document.getElementById('score-ref-grid');
+  let html = SCORE_INDEX.map(e => `
+    <div class="score-ref-item">
+      <span class="ref-label">${e.label}</span>
+      <span class="ref-pts">${e.points} pts</span>
+    </div>`).join('');
+  html += `
+    <div class="score-ref-item ref-zero">
+      <span class="ref-label">46th+ / Cut</span>
+      <span class="ref-pts">0 pts</span>
+    </div>`;
+  grid.innerHTML = html;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+renderRankings();
+renderScoreRef();
+</script>
+</body>
+</html>

@@ -122,6 +122,8 @@
     transition: all 0.2s;
     background: transparent;
     color: var(--green-pale);
+    text-decoration: none;
+    display: inline-block;
   }
 
   .nav-btn:hover {
@@ -1270,6 +1272,9 @@
     cursor: pointer;
     text-align: left;
     transition: all 0.15s;
+    text-decoration: none;
+    display: block;
+    width: 100%;
   }
 
   .mobile-dropdown-item:hover {
@@ -1321,6 +1326,7 @@
     <nav class="header-nav">
       <button class="nav-btn active" onclick="showView('create')">Build Team</button>
       <button class="nav-btn" onclick="showView('leaderboard')">Leaderboard</button>
+      <a class="nav-btn" href="player-rankings.html">Player Rankings</a>
       <button class="nav-btn" onclick="showView('admin')">Admin</button>
     </nav>
     <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Open navigation menu">
@@ -1333,6 +1339,7 @@
     <div class="mobile-dropdown" id="mobile-dropdown">
       <button class="mobile-dropdown-item active" onclick="mobileNavTo('create')">Build Team</button>
       <button class="mobile-dropdown-item" onclick="mobileNavTo('leaderboard')">Leaderboard</button>
+      <a class="mobile-dropdown-item" href="player-rankings.html">Player Rankings</a>
       <button class="mobile-dropdown-item" onclick="mobileNavTo('admin')">Admin</button>
     </div>
   </div>
@@ -1535,6 +1542,28 @@ Rory McIlroy,NIR,12,0
         </div>
 
         <div class="admin-card">
+          <h3>Player Rankings Page</h3>
+          <p>Publish a snapshot of the current player scores to the <strong>Player Rankings</strong> page. This replaces whatever was previously published — only click when scores are ready to go live.</p>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:4px;">
+            <button id="update-scores-btn" class="admin-btn" onclick="fetchAndPublishRankings()" style="display:inline-flex;align-items:center;gap:8px;">
+              <svg id="update-scores-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+                <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+              </svg>
+              <span id="update-scores-label">Update Player Scores</span>
+            </button>
+            <a class="admin-btn" href="player-rankings.html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              View Rankings Page
+            </a>
+            <span id="rankings-publish-status" style="font-family:'EB Garamond',serif;font-size:0.9rem;font-style:italic;color:var(--green-mid);"></span>
+          </div>
+        </div>
+
+        <div class="admin-card">
           <h3>Registered Teams (<span id="admin-team-count">0</span>)</h3>
           <div id="teams-list-admin" class="teams-list">
             <p style="color:var(--ink-light);font-style:italic;">No teams yet.</p>
@@ -1564,6 +1593,7 @@ Rory McIlroy,NIR,12,0
   </div>
 </div>
 
+<script src="score-index.js"></script>
 <script>
 // ===================================================
 // DATA: 2026 Masters Field (approx. 89 players)
@@ -2185,6 +2215,129 @@ function clearAllTeams() {
   renderAdminTeams();
   renderLeaderboard();
   toast('All teams cleared', 'success');
+}
+
+// ===================================================
+// LIVE SCORE FETCH + RANKINGS PUBLISH
+// ===================================================
+
+// ESPN unofficial golf leaderboard API — returns active tournament during Masters week.
+// If the tournament ID needs to be pinned explicitly, use:
+//   https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=<ID>
+// The Masters 2026 ESPN event ID will be determinable from the ESPN schedule page
+// at https://www.espn.com/golf/schedule in the week of April 6–12 2026.
+const MASTERS_SCORES_API = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
+
+async function fetchAndPublishRankings() {
+  const btn    = document.getElementById('update-scores-btn');
+  const label  = document.getElementById('update-scores-label');
+  const icon   = document.getElementById('update-scores-icon');
+  const status = document.getElementById('rankings-publish-status');
+
+  btn.disabled = true;
+  label.textContent = 'Fetching live scores…';
+  icon.style.animation = 'spin 1s linear infinite';
+  if (status) status.textContent = '';
+
+  try {
+    const res = await fetch(MASTERS_SCORES_API);
+    if (!res.ok) throw new Error(`API responded with HTTP ${res.status}`);
+    const data = await res.json();
+
+    // Locate the Masters event in the response
+    const events = data.events || [];
+    const mastersEvent = events.find(e =>
+      (e.name || '').toLowerCase().includes('master') ||
+      (e.shortName || '').toLowerCase().includes('master')
+    ) || events[0];  // fall back to first/only active event
+
+    if (!mastersEvent) throw new Error('No golf event found in API response');
+
+    const competitors = mastersEvent.competitions?.[0]?.competitors;
+    if (!competitors?.length) throw new Error('No competitor data in API response');
+
+    // Build lookup: normalised player name → { rank, pos, points }
+    const espnLookup = {};
+    competitors.forEach(c => {
+      const name    = (c.athlete?.displayName || '').trim();
+      const posStr  = c.status?.position?.displayName || '';
+      const statusT = c.status?.type?.name || '';
+      const isCut   = /CUT|WD|DQ|DNF/i.test(statusT) || /CUT|WD|DQ|DNF/i.test(posStr);
+      const rank    = isCut ? null : parseRank(posStr);
+      const pts     = getPointsForRank(rank);
+
+      if (name) {
+        espnLookup[normName(name)] = { rank, posStr: isCut ? posStr.toUpperCase() : posStr, points: pts };
+      }
+    });
+
+    // Match local players to ESPN data and apply scoring
+    let matched = 0;
+    players.forEach(p => {
+      const key   = normName(p.name);
+      const entry = espnLookup[key] ?? fuzzyMatch(espnLookup, p.name);
+      if (entry !== undefined) {
+        p.tournamentRank = entry.rank;          // numeric (null = CUT/WD/not yet played)
+        p.tournamentPos  = entry.posStr || '—'; // display string e.g. "T4", "CUT"
+        p.points         = entry.points;
+        matched++;
+      }
+      // Players not yet in ESPN data retain their existing values
+    });
+
+    if (matched === 0) throw new Error('No local players matched ESPN data — names may differ');
+
+    savePlayers();
+    renderPlayerGrid();
+    renderLeaderboard();
+    publishPlayerRankings();
+
+    toast(`Live scores fetched — ${matched} players updated ✓`, 'success');
+    if (status) status.textContent = `Live data: ${matched} / ${players.length} players matched`;
+
+  } catch (err) {
+    console.error('[Score fetch]', err);
+    toast('Live fetch failed: ' + err.message, 'error');
+    if (status) status.textContent = 'Fetch failed — see console for details';
+  } finally {
+    btn.disabled = false;
+    label.textContent = 'Update Player Scores';
+    icon.style.animation = '';
+  }
+}
+
+/** Normalise a player name for comparison: lowercase, strip accents, collapse spaces */
+function normName(name) {
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')  // strip accent diacritics
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Fall back to last-name matching when exact normalised name fails */
+function fuzzyMatch(lookup, playerName) {
+  const lastName = normName(playerName).split(' ').pop();
+  const key = Object.keys(lookup).find(k => k.split(' ').pop() === lastName);
+  return key ? lookup[key] : undefined;
+}
+
+function publishPlayerRankings() {
+  const snapshot = {
+    players: players.map(p => ({
+      name:           p.name,
+      country:        p.country,
+      price:          p.price,
+      points:         p.points         ?? 0,
+      tournamentRank: p.tournamentRank ?? null,  // numeric rank (null = CUT/not played)
+      tournamentPos:  p.tournamentPos  ?? '—',   // display string e.g. "T4", "CUT", "1"
+    })),
+    updatedAt: new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+  };
+  localStorage.setItem('masters_rankings_snapshot', JSON.stringify(snapshot));
+  const status = document.getElementById('rankings-publish-status');
+  if (status) status.textContent = 'Published at ' + snapshot.updatedAt;
+  toast('Player rankings published ✓', 'success');
 }
 
 // ===================================================

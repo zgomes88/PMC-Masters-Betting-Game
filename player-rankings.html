@@ -494,17 +494,19 @@ function renderRankings() {
   const snapshot = JSON.parse(raw);
   label.textContent = 'Last updated: ' + snapshot.updatedAt;
 
-  // Sort: active players by tournament rank ascending (1st first),
-  // then CUT/WD/not-yet-played players alphabetically at the bottom.
-  const active  = snapshot.players.filter(p => p.tournamentRank != null).sort((a, b) =>
+  // Sort: active players by rank ascending, then cut players alphabetically, then not-yet-played.
+  const active    = snapshot.players.filter(p => !p.isCut && p.tournamentRank != null).sort((a, b) =>
     a.tournamentRank !== b.tournamentRank
       ? a.tournamentRank - b.tournamentRank
       : a.name.localeCompare(b.name)
   );
-  const notPlayed = snapshot.players.filter(p => p.tournamentRank == null).sort((a, b) =>
+  const cutGroup  = snapshot.players.filter(p => p.isCut).sort((a, b) =>
     a.name.localeCompare(b.name)
   );
-  const sorted = [...active, ...notPlayed];
+  const notPlayed = snapshot.players.filter(p => !p.isCut && p.tournamentRank == null).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+  const sorted = [...active, ...cutGroup, ...notPlayed];
 
   let html = '';
 
@@ -514,15 +516,14 @@ function renderRankings() {
       ? escHtml(player.tournamentPos)
       : (hasRank ? String(player.tournamentRank) : '—');
 
-    // Medal row classes only for outright leaders (rank 1, 2, 3 with no tie conflict)
-    const posClass = player.tournamentRank === 1 ? 'pos-1'
-                   : player.tournamentRank === 2 ? 'pos-2'
-                   : player.tournamentRank === 3 ? 'pos-3' : '';
+    // Medal row classes only for top 3 active (non-cut) players
+    const posClass = (!player.isCut && player.tournamentRank === 1) ? 'pos-1'
+                   : (!player.isCut && player.tournamentRank === 2) ? 'pos-2'
+                   : (!player.isCut && player.tournamentRank === 3) ? 'pos-3' : '';
 
-    const isCut = !hasRank && player.tournamentPos && player.tournamentPos !== '—';
-    const posLabel = hasRank
+    const posLabel = (!player.isCut && hasRank)
       ? `<span class="rank-badge">${posDisp}</span>`
-      : (isCut
+      : (player.isCut
           ? `<span style="font-family:'Teko',sans-serif;font-size:0.8rem;letter-spacing:0.1em;color:var(--ink-light);">${posDisp}</span>`
           : `<span class="rank-tied">—</span>`);
 

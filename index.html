@@ -1437,7 +1437,7 @@
               <th>Rank</th>
               <th>Team</th>
               <th>Owner</th>
-              <th>Points</th>
+              <th>Team Score</th>
             </tr>
           </thead>
           <tbody id="lb-tbody">
@@ -1596,97 +1596,98 @@ Rory McIlroy,NIR,12,0
 <script src="score-index.js"></script>
 <script>
 // ===================================================
-// DATA: 2026 Masters Field (approx. 89 players)
-// Price scale: $3–$14 (budget $50, pick 3-8)
+// DATA: 2026 Masters Field (total 88 players)
+// Price scale: $30 (pick 1-10)
 // ===================================================
 const DEFAULT_PLAYERS = [
-  {name:"Scottie Scheffler",country:"USA",price:14,points:0},
-  {name:"Rory McIlroy",country:"NIR",price:12,points:0},
-  {name:"Xander Schauffele",country:"USA",price:11,points:0},
-  {name:"Collin Morikawa",country:"USA",price:10,points:0},
-  {name:"Jon Rahm",country:"ESP",price:10,points:0},
-  {name:"Brooks Koepka",country:"USA",price:9,points:0},
-  {name:"Viktor Hovland",country:"NOR",price:9,points:0},
-  {name:"Patrick Cantlay",country:"USA",price:9,points:0},
-  {name:"Ludvig Åberg",country:"SWE",price:9,points:0},
-  {name:"Tommy Fleetwood",country:"ENG",price:8,points:0},
-  {name:"Shane Lowry",country:"IRL",price:8,points:0},
-  {name:"Tony Finau",country:"USA",price:8,points:0},
-  {name:"Matt Fitzpatrick",country:"ENG",price:8,points:0},
-  {name:"Hideki Matsuyama",country:"JPN",price:8,points:0},
-  {name:"Justin Thomas",country:"USA",price:8,points:0},
-  {name:"Jordan Spieth",country:"USA",price:7,points:0},
-  {name:"Russell Henley",country:"USA",price:7,points:0},
-  {name:"Wyndham Clark",country:"USA",price:7,points:0},
-  {name:"Sungjae Im",country:"KOR",price:7,points:0},
-  {name:"Bryson DeChambeau",country:"USA",price:7,points:0},
-  {name:"Cameron Smith",country:"AUS",price:7,points:0},
-  {name:"Keegan Bradley",country:"USA",price:7,points:0},
-  {name:"Max Homa",country:"USA",price:7,points:0},
-  {name:"Tom Kim",country:"KOR",price:7,points:0},
-  {name:"Sepp Straka",country:"AUT",price:6,points:0},
-  {name:"Cameron Young",country:"USA",price:6,points:0},
-  {name:"Chris Kirk",country:"USA",price:6,points:0},
-  {name:"Harris English",country:"USA",price:6,points:0},
-  {name:"Si Woo Kim",country:"KOR",price:6,points:0},
-  {name:"Billy Horschel",country:"USA",price:6,points:0},
-  {name:"Byeong Hun An",country:"KOR",price:6,points:0},
-  {name:"Tyrrell Hatton",country:"ENG",price:6,points:0},
-  {name:"Corey Conners",country:"CAN",price:6,points:0},
-  {name:"Taylor Moore",country:"USA",price:5,points:0},
-  {name:"Denny McCarthy",country:"USA",price:5,points:0},
-  {name:"Jason Day",country:"AUS",price:5,points:0},
-  {name:"Brian Harman",country:"USA",price:5,points:0},
-  {name:"Davis Riley",country:"USA",price:5,points:0},
-  {name:"Nick Taylor",country:"CAN",price:5,points:0},
-  {name:"Kurt Kitayama",country:"USA",price:5,points:0},
-  {name:"Nico Echavarria",country:"COL",price:5,points:0},
-  {name:"Adam Scott",country:"AUS",price:5,points:0},
-  {name:"Angel Cabrera Bello",country:"ESP",price:5,points:0},
-  {name:"Erik van Rooyen",country:"RSA",price:5,points:0},
-  {name:"Min Woo Lee",country:"AUS",price:5,points:0},
-  {name:"Thomas Detry",country:"BEL",price:5,points:0},
-  {name:"Taylor Pendrith",country:"CAN",price:5,points:0},
-  {name:"Aaron Rai",country:"ENG",price:4,points:0},
-  {name:"Akshay Bhatia",country:"USA",price:4,points:0},
-  {name:"Alejandro Tosti",country:"ARG",price:4,points:0},
-  {name:"Austin Eckroat",country:"USA",price:4,points:0},
-  {name:"Ben Griffin",country:"USA",price:4,points:0},
-  {name:"Christo Lamprecht",country:"RSA",price:4,points:0},
-  {name:"Dustin Johnson",country:"USA",price:4,points:0},
-  {name:"Francesco Molinari",country:"ITA",price:4,points:0},
-  {name:"Garrick Higgo",country:"RSA",price:4,points:0},
-  {name:"J.J. Spaun",country:"USA",price:4,points:0},
-  {name:"Jhonattan Vegas",country:"VEN",price:4,points:0},
-  {name:"Joaquín Niemann",country:"CHI",price:4,points:0},
-  {name:"José María Olazábal",country:"ESP",price:3,points:0},
-  {name:"Kevin Yu",country:"TPE",price:4,points:0},
-  {name:"Matthias Schmid",country:"GER",price:4,points:0},
-  {name:"Michael Kim",country:"USA",price:3,points:0},
-  {name:"Mike Weir",country:"CAN",price:3,points:0},
-  {name:"Nate Lashley",country:"USA",price:4,points:0},
-  {name:"Neal Shipley",country:"USA",price:3,points:0},
-  {name:"Nick Dunlap",country:"USA",price:4,points:0},
-  {name:"Patrick Reed",country:"USA",price:4,points:0},
-  {name:"Phil Mickelson",country:"USA",price:3,points:0},
-  {name:"Rickie Fowler",country:"USA",price:4,points:0},
-  {name:"Robert MacIntyre",country:"SCO",price:5,points:0},
-  {name:"Santiago de la Torre",country:"MEX",price:3,points:0},
-  {name:"Sergio Garcia",country:"ESP",price:3,points:0},
-  {name:"Tiger Woods",country:"USA",price:4,points:0},
-  {name:"Thriston Lawrence",country:"RSA",price:3,points:0},
-  {name:"Victor Perez",country:"FRA",price:4,points:0},
-  {name:"Will Zalatoris",country:"USA",price:5,points:0},
-  {name:"Zach Johnson",country:"USA",price:3,points:0},
-  {name:"Jackson Suber",country:"USA",price:3,points:0},
-  {name:"Luke Clanton",country:"USA",price:3,points:0},
-  {name:"Hiroshi Tai",country:"SGP",price:3,points:0},
-  {name:"Gordon Sargent",country:"USA",price:3,points:0},
-  {name:"Sam Burns",country:"USA",price:5,points:0},
-  {name:"Sahith Theegala",country:"USA",price:6,points:0},
-  {name:"Emiliano Grillo",country:"ARG",price:4,points:0},
-  {name:"Bud Cauley",country:"USA",price:3,points:0},
-  {name:"Charles Howell III",country:"USA",price:3,points:0},
+  {name:"Scottie Scheffler",country:"USA",price:20.6,points:0},
+  {name:"Rory McIlroy",country:"NIR",price:11.7,points:0},
+  {name:"Ludvig Åberg",country:"SWE",price:11.5,points:0},
+  {name:"Xander Schauffele",country:"USA",price:11.2,points:0},
+  {name:"Bryson DeChambeau",country:"USA",price:10.4,points:0},
+  {name:"Jon Rahm",country:"ESP",price:10.4,points:0},
+  {name:"Matt Fitzpatrick",country:"ENG",price:8.6,points:0},
+  {name:"Tommy Fleetwood",country:"ENG",price:8.5,points:0},
+  {name:"Collin Morikawa",country:"USA",price:8.4,points:0},
+  {name:"Cameron Young",country:"USA",price:8.2,points:0},
+  {name:"Justin Rose",country:"ENG",price:8.1,points:0},
+  {name:"Patrick Reed",country:"USA",price:7.4,points:0},
+  {name:"Jordan Spieth",country:"USA",price:7.4,points:0},
+  {name:"Viktor Hovland",country:"NOR",price:7.3,points:0},
+  {name:"Hideki Matsuyama",country:"JPN",price:7.1,points:0},
+  {name:"Brooks Koepka",country:"USA",price:7.0,points:0},
+  {name:"Shane Lowry",country:"IRL",price:6.1,points:0},
+  {name:"Justin Thomas",country:"USA",price:6.0,points:0},
+  {name:"Tyrrell Hatton",country:"ENG",price:6.0,points:0},
+  {name:"Chris Gotterup",country:"USA",price:5.7,points:0},
+  {name:"Jacob Bridgeman",country:"USA",price:5.6,points:0},
+  {name:"Robert MacIntyre",country:"SCO",price:5.5,points:0},
+  {name:"Akshay Bhatia",country:"USA",price:5.5,points:0},
+  {name:"Corey Conners",country:"CAN",price:5.5,points:0},
+  {name:"Min Woo Lee",country:"AUS",price:5.5,points:0},
+  {name:"Patrick Cantlay",country:"USA",price:5.4,points:0},
+  {name:"Cameron Smith",country:"AUS",price:5.4,points:0},
+  {name:"Si Woo Kim",country:"KOR",price:5.4,points:0},
+  {name:"Jason Day",country:"AUS",price:5.3,points:0},
+  {name:"Sungjae Im",country:"KOR",price:5.3,points:0},
+  {name:"Russell Henley",country:"USA",price:5.2,points:0},
+  {name:"Sepp Straka",country:"AUT",price:5.2,points:0},
+  {name:"Adam Scott",country:"AUS",price:5.2,points:0},
+  {name:"Sam Burns",country:"USA",price:5.2,points:0},
+  {name:"Harris English",country:"USA",price:5.0,points:0},
+  {name:"Ben Griffin",country:"USA",price:4.9,points:0},
+  {name:"J.J. Spaun",country:"USA",price:4.8,points:0},
+  {name:"Max Homa",country:"USA",price:4.6,points:0},
+  {name:"Maverick McNealy",country:"USA",price:4.4,points:0},
+  {name:"Marco Penge",country:"ENG",price:4.2,points:0},
+  {name:"Alex Noren",country:"SWE",price:3.8,points:0},
+  {name:"Ryan Fox",country:"NZL",price:3.8,points:0},
+  {name:"Ryan Gerard",country:"USA",price:3.8,points:0},
+  {name:"Wyndham Clark",country:"USA",price:3.7,points:0},
+  {name:"Rasmus Højgaard",country:"DEN",price:3.6,points:0},
+  {name:"Brian Harman",country:"USA",price:3.4,points:0},
+  {name:"Keegan Bradley",country:"USA",price:3.4,points:0},
+  {name:"Sergio García",country:"ESP",price:3.3,points:0},
+  {name:"Aaron Rai",country:"ENG",price:3.2,points:0},
+  {name:"Kurt Kitayama",country:"USA",price:3.2,points:0},
+  {name:"Casey Jarvis",country:"RSA",price:3.0,points:0},
+  {name:"Tom McKibbin",country:"NIR",price:3.0,points:0},
+  {name:"Dustin Johnson",country:"USA",price:2.8,points:0},
+  {name:"Harry Hall",country:"ENG",price:2.6,points:0},
+  {name:"John Keefer",country:"USA",price:2.6,points:0},
+  {name:"Rasmus Neergaard-Petersen",country:"DEN",price:2.6,points:0},
+  {name:"Nicolas Echavarria",country:"COL",price:2.5,points:0},
+  {name:"Samuel Stevens",country:"USA",price:2.3,points:0},
+  {name:"Tiger Woods",country:"USA",price:2.3,points:0},
+  {name:"Aldrich Potgieter",country:"RSA",price:2.2,points:0},
+  {name:"Andrew Novak",country:"USA",price:2.2,points:0},
+  {name:"Carlos Ortiz",country:"MEX",price:2.2,points:0},
+  {name:"Max Greyserman",country:"USA",price:2.2,points:0},
+  {name:"Michael Kim",country:"USA",price:2.2,points:0},
+  {name:"Nick Taylor",country:"CAN",price:2.2,points:0},
+  {name:"Sami Valimaki",country:"FIN",price:2.2,points:0},
+  {name:"Ángel Cabrera",country:"ARG",price:2.0,points:0},
+  {name:"Brandon Holtz",country:"USA",price:2.0,points:0},
+  {name:"Brian Campbell",country:"USA",price:2.0,points:0},
+  {name:"Bubba Watson",country:"USA",price:2.0,points:0},
+  {name:"Charl Schwartzel",country:"RSA",price:2.0,points:0},
+  {name:"Danny Willett",country:"ENG",price:2.0,points:0},
+  {name:"Davis Riley",country:"USA",price:2.0,points:0},
+  {name:"Ethan Fang",country:"USA",price:2.0,points:0},
+  {name:"Fifa Laopakdee",country:"THA",price:2.0,points:0},
+  {name:"Fred Couples",country:"USA",price:2.0,points:0},
+  {name:"Haotong Li",country:"CHN",price:2.0,points:0},
+  {name:"Jackson Herrington",country:"USA",price:2.0,points:0},
+  {name:"José María Olazábal",country:"ESP",price:2.0,points:0},
+  {name:"Kristoffer Reitan",country:"NOR",price:2.0,points:0},
+  {name:"Mason Howell",country:"USA",price:2.0,points:0},
+  {name:"Mateo Pulcini",country:"ARG",price:2.0,points:0},
+  {name:"Michael Brennan",country:"USA",price:2.0,points:0},
+  {name:"Mike Weir",country:"CAN",price:2.0,points:0},
+  {name:"Naoyuki Kataoka",country:"JPN",price:2.0,points:0},
+  {name:"Phil Mickelson",country:"USA",price:2.0,points:0},
+  {name:"Vijay Singh",country:"FIJ",price:2.0,points:0},
+  {name:"Zach Johnson",country:"USA",price:2.0,points:0},
 ];
 
 const BUDGET = 30;
@@ -2012,13 +2013,6 @@ document.addEventListener('click', function(e) {
 // ===================================================
 // LEADERBOARD
 // ===================================================
-function calcTeamPoints(team) {
-  return team.roster.reduce((sum, pName) => {
-    const p = players.find(pl => pl.name === pName);
-    return sum + (p ? p.points : 0);
-  }, 0);
-}
-
 function renderLeaderboard() {
   const tbody = document.getElementById('lb-tbody');
   if (!teams.length) {
@@ -2026,24 +2020,57 @@ function renderLeaderboard() {
     return;
   }
 
+  // Build score lookup from the published snapshot (same source as player-rankings.html).
+  // Keys are normalised player names; values are fantasy points.
+  const snapshotMap = {};
+  const raw = localStorage.getItem('masters_rankings_snapshot');
+  if (raw) {
+    try {
+      JSON.parse(raw).players.forEach(p => { snapshotMap[normName(p.name)] = p.points ?? 0; });
+    } catch (_) {}
+  }
+
+  function teamScore(team) {
+    return team.roster.reduce((sum, pName) => {
+      const key = normName(pName);
+      if (snapshotMap[key] !== undefined) return sum + snapshotMap[key];
+      // Fuzzy fallback for name mismatches between roster and snapshot
+      const entry = fuzzyMatchPoints(snapshotMap, pName);
+      if (entry !== undefined) return sum + entry;
+      // Last resort: in-memory players array
+      const p = players.find(pl => normName(pl.name) === key);
+      return sum + (p ? (p.points ?? 0) : 0);
+    }, 0);
+  }
+
+  // Sort by team score descending; alphabetical as tiebreak on name
   const sorted = [...teams]
-    .map(t => ({ ...t, totalPoints: calcTeamPoints(t) }))
-    .sort((a, b) => b.totalPoints - a.totalPoints);
+    .map(t => ({ ...t, totalScore: teamScore(t) }))
+    .sort((a, b) => b.totalScore - a.totalScore || a.name.localeCompare(b.name));
 
-  tbody.innerHTML = sorted.map((t, i) => {
-    const rank = i + 1;
-    const rankClass = rank <= 3 ? `rank-${rank}` : '';
-    const rankLabel = rank <= 3
-      ? `<span class="rank-medal">${['🥇','🥈','🥉'][rank-1]}</span>`
-      : rank;
-
-    return `<tr class="${rankClass}">
-      <td class="rank-cell">${rankLabel}</td>
-      <td class="team-cell"><div class="team-name">${t.name}</div></td>
-      <td class="team-cell"><div class="team-name" style="font-weight:400;font-size:0.97rem;">${t.ownerName || '—'}</div></td>
-      <td class="points-cell">${t.totalPoints}</td>
-    </tr>`;
-  }).join('');
+  // Assign ranks with tie handling: tied teams share the same rank number
+  let html = '';
+  let i = 0;
+  while (i < sorted.length) {
+    let j = i;
+    while (j < sorted.length && sorted[j].totalScore === sorted[i].totalScore) j++;
+    const rankNum = i + 1;
+    for (let k = i; k < j; k++) {
+      const t = sorted[k];
+      const rankClass = rankNum <= 3 ? `rank-${rankNum}` : '';
+      const rankLabel = rankNum <= 3
+        ? `<span class="rank-medal">${['🥇','🥈','🥉'][rankNum - 1]}</span>`
+        : rankNum;
+      html += `<tr class="${rankClass}">
+        <td class="rank-cell">${rankLabel}</td>
+        <td class="team-cell"><div class="team-name">${escHtml(t.name)}</div></td>
+        <td class="team-cell"><div class="team-name" style="font-weight:400;font-size:0.97rem;">${escHtml(t.ownerName || '—')}</div></td>
+        <td class="points-cell">${t.totalScore}</td>
+      </tr>`;
+    }
+    i = j;
+  }
+  tbody.innerHTML = html;
 }
 
 // ===================================================
@@ -2221,12 +2248,10 @@ function clearAllTeams() {
 // LIVE SCORE FETCH + RANKINGS PUBLISH
 // ===================================================
 
-// ESPN unofficial golf leaderboard API — returns active tournament during Masters week.
-// If the tournament ID needs to be pinned explicitly, use:
-//   https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard?event=<ID>
-// The Masters 2026 ESPN event ID will be determinable from the ESPN schedule page
-// at https://www.espn.com/golf/schedule in the week of April 6–12 2026.
-const MASTERS_SCORES_API = 'https://site.api.espn.com/apis/site/v2/sports/golf/leaderboard';
+// ESPN PGA Tour scoreboard API — pin to the correct tournament ID each week.
+// The Masters 2026 ID will be available at https://www.espn.com/golf/schedule in April 2026.
+// Current ID set to Masters 2026: update when the official ESPN event ID is confirmed.
+const MASTERS_SCORES_API = 'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?id=401811941';
 
 async function fetchAndPublishRankings() {
   const btn    = document.getElementById('update-scores-btn');
@@ -2244,30 +2269,54 @@ async function fetchAndPublishRankings() {
     if (!res.ok) throw new Error(`API responded with HTTP ${res.status}`);
     const data = await res.json();
 
-    // Locate the Masters event in the response
     const events = data.events || [];
-    const mastersEvent = events.find(e =>
-      (e.name || '').toLowerCase().includes('master') ||
-      (e.shortName || '').toLowerCase().includes('master')
-    ) || events[0];  // fall back to first/only active event
+    if (!events.length) throw new Error('No golf event found in API response');
 
-    if (!mastersEvent) throw new Error('No golf event found in API response');
-
-    const competitors = mastersEvent.competitions?.[0]?.competitors;
+    const competitors = events[0].competitions?.[0]?.competitors;
     if (!competitors?.length) throw new Error('No competitor data in API response');
 
-    // Build lookup: normalised player name → { rank, pos, points }
-    const espnLookup = {};
-    competitors.forEach(c => {
-      const name    = (c.athlete?.displayName || '').trim();
-      const posStr  = c.status?.position?.displayName || '';
-      const statusT = c.status?.type?.name || '';
-      const isCut   = /CUT|WD|DQ|DNF/i.test(statusT) || /CUT|WD|DQ|DNF/i.test(posStr);
-      const rank    = isCut ? null : parseRank(posStr);
-      const pts     = getPointsForRank(rank);
+    // Players with fewer rounds of linescores than the field maximum were cut.
+    // This is score-agnostic — works regardless of where the cut line falls.
+    const maxRounds = Math.max(...competitors.map(c => (c.linescores || []).length));
 
+    function parseScoreStr(s) {
+      const t = String(s ?? '').trim();
+      if (t === 'E' || t === '') return 0;
+      const n = parseInt(t, 10);
+      return Number.isFinite(n) ? n : 9999;
+    }
+
+    // Sort by ESPN's pre-assigned order field, then split active vs cut
+    const sorted = [...competitors].sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
+    const active = sorted.filter(c => (c.linescores || []).length >= maxRounds);
+    const cut    = sorted.filter(c => (c.linescores || []).length <  maxRounds);
+
+    // Assign numeric ranks to active players — tied players share the same rank number
+    const activeRanked = [];
+    let i = 0;
+    while (i < active.length) {
+      let j = i;
+      const scoreVal = parseScoreStr(active[i].score);
+      while (j < active.length && parseScoreStr(active[j].score) === scoreVal) j++;
+      const rankNum = i + 1;
+      for (let k = i; k < j; k++) activeRanked.push({ c: active[k], rank: rankNum, isCut: false });
+      i = j;
+    }
+
+    // CUT rank = last active rank + 1 (dynamic — no hardcoded value)
+    const cutRank = activeRanked.length > 0 ? activeRanked[activeRanked.length - 1].rank + 1 : 1;
+    const cutRanked = cut.map(c => ({ c, rank: cutRank, isCut: true }));
+
+    // Build lookup: normalised player name → { rank, isCut, points }
+    const espnLookup = {};
+    [...activeRanked, ...cutRanked].forEach(({ c, rank, isCut }) => {
+      const name = (c.athlete?.displayName || '').trim();
       if (name) {
-        espnLookup[normName(name)] = { rank, posStr: isCut ? posStr.toUpperCase() : posStr, points: pts };
+        espnLookup[normName(name)] = {
+          rank,
+          isCut,
+          points: getPointsForRank(isCut ? null : rank),
+        };
       }
     });
 
@@ -2277,8 +2326,9 @@ async function fetchAndPublishRankings() {
       const key   = normName(p.name);
       const entry = espnLookup[key] ?? fuzzyMatch(espnLookup, p.name);
       if (entry !== undefined) {
-        p.tournamentRank = entry.rank;          // numeric (null = CUT/WD/not yet played)
-        p.tournamentPos  = entry.posStr || '—'; // display string e.g. "T4", "CUT"
+        p.tournamentRank = entry.rank;
+        p.tournamentPos  = String(entry.rank);
+        p.isCut          = entry.isCut;
         p.points         = entry.points;
         matched++;
       }
@@ -2315,11 +2365,99 @@ function normName(name) {
     .trim();
 }
 
-/** Fall back to last-name matching when exact normalised name fails */
+/**
+ * Multi-strategy fuzzy name match against a lookup of normalised names → entries.
+ * Strategies in priority order:
+ *   1. Last-name only
+ *   2. Reversed word order  (e.g. "Im Sungjae" ↔ "Sungjae Im")
+ *   3. First initial + last name  (e.g. "T. Woods" ↔ "Tiger Woods")
+ *   4. Levenshtein distance ≤ 2 on full normalised name
+ */
 function fuzzyMatch(lookup, playerName) {
-  const lastName = normName(playerName).split(' ').pop();
-  const key = Object.keys(lookup).find(k => k.split(' ').pop() === lastName);
-  return key ? lookup[key] : undefined;
+  const norm  = normName(playerName);
+  const words = norm.split(' ');
+  const last  = words[words.length - 1];
+  const first = words[0];
+  const keys  = Object.keys(lookup);
+
+  // 1. Last-name only
+  let key = keys.find(k => k.split(' ').pop() === last);
+  if (key) return lookup[key];
+
+  // 2. Reversed word order
+  const reversed = [...words].reverse().join(' ');
+  key = keys.find(k => k === reversed);
+  if (key) return lookup[key];
+
+  // 3. First initial + last name
+  key = keys.find(k => {
+    const kw = k.split(' ');
+    return kw[kw.length - 1] === last && kw[0][0] === first[0];
+  });
+  if (key) return lookup[key];
+
+  // 4. Levenshtein distance ≤ 2
+  let bestKey = null, bestDist = 3;
+  for (const k of keys) {
+    const d = levenshtein(norm, k);
+    if (d < bestDist) { bestKey = k; bestDist = d; }
+  }
+  if (bestKey) return lookup[bestKey];
+
+  return undefined;
+}
+
+/**
+ * Same multi-strategy match but against a flat name→points map (number values).
+ * Used by renderLeaderboard to resolve roster names against the snapshot map.
+ */
+function fuzzyMatchPoints(map, playerName) {
+  const norm  = normName(playerName);
+  const words = norm.split(' ');
+  const last  = words[words.length - 1];
+  const first = words[0];
+  const keys  = Object.keys(map);
+
+  let key = keys.find(k => k.split(' ').pop() === last);
+  if (key) return map[key];
+
+  const reversed = [...words].reverse().join(' ');
+  key = keys.find(k => k === reversed);
+  if (key) return map[key];
+
+  key = keys.find(k => {
+    const kw = k.split(' ');
+    return kw[kw.length - 1] === last && kw[0][0] === first[0];
+  });
+  if (key) return map[key];
+
+  let bestKey = null, bestDist = 3;
+  for (const k of keys) {
+    const d = levenshtein(norm, k);
+    if (d < bestDist) { bestKey = k; bestDist = d; }
+  }
+  return bestKey !== null ? map[bestKey] : undefined;
+}
+
+/** Escape HTML special characters to prevent XSS in rendered strings. */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/** Levenshtein edit distance between two strings. */
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = [];
+  for (let i = 0; i <= m; i++) { dp[i] = [i]; }
+  for (let j = 0; j <= n; j++) { dp[0][j] = j; }
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+  return dp[m][n];
 }
 
 function publishPlayerRankings() {
@@ -2329,8 +2467,9 @@ function publishPlayerRankings() {
       country:        p.country,
       price:          p.price,
       points:         p.points         ?? 0,
-      tournamentRank: p.tournamentRank ?? null,  // numeric rank (null = CUT/not played)
-      tournamentPos:  p.tournamentPos  ?? '—',   // display string e.g. "T4", "CUT", "1"
+      tournamentRank: p.tournamentRank ?? null,  // numeric rank (same number for tied players; cut rank for cut players)
+      tournamentPos:  p.tournamentPos  ?? '—',   // display string — numeric rank as string, or '—' if not yet played
+      isCut:          p.isCut          ?? false,  // true = did not make the cut
     })),
     updatedAt: new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
   };

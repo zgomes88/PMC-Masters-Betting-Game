@@ -1595,6 +1595,7 @@ Rory McIlroy,NIR,12,0
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="score-index.js"></script>
 <script>
 // ===================================================
@@ -2188,37 +2189,49 @@ function exportPlayersCSV() {
 // ===================================================
 // ADMIN AUTH
 // ===================================================
-const ADMIN_PASSWORD = '111_Trowbridge';
+const ADMIN_EMAIL = 'zrg2101@gmail.com'; // Firebase Auth user — password managed in Firebase Console
 let adminAuthed = false;
 
 function adminLogin() {
   const input = document.getElementById('admin-pw-input');
   const errorEl = document.getElementById('admin-login-error');
-  const pw = input.value;
+  const btn = document.querySelector('.login-submit-btn');
+  const pw = input.value.trim();
+  if (!pw) return;
 
-  if (pw === ADMIN_PASSWORD) {
-    adminAuthed = true;
-    errorEl.textContent = '';
-    input.value = '';
-    input.classList.remove('input-error');
-    document.getElementById('admin-gate').style.display = 'none';
-    document.getElementById('admin-content').style.display = 'block';
-    renderAdminTeams();
-  } else {
-    errorEl.textContent = 'Incorrect password. Please try again.';
-    input.classList.add('input-error');
-    input.select();
-    // Remove shake class after animation so it can retrigger
-    setTimeout(() => input.classList.remove('input-error'), 400);
-  }
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  firebase.auth().signInWithEmailAndPassword(ADMIN_EMAIL, pw)
+    .then(() => {
+      adminAuthed = true;
+      errorEl.textContent = '';
+      input.value = '';
+      input.classList.remove('input-error');
+      document.getElementById('admin-gate').style.display = 'none';
+      document.getElementById('admin-content').style.display = 'block';
+      renderAdminTeams();
+    })
+    .catch(() => {
+      errorEl.textContent = 'Incorrect password. Please try again.';
+      input.classList.add('input-error');
+      input.select();
+      setTimeout(() => input.classList.remove('input-error'), 400);
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
 }
 
 function adminLogout() {
-  adminAuthed = false;
-  document.getElementById('admin-gate').style.display = 'flex';
-  document.getElementById('admin-content').style.display = 'none';
-  document.getElementById('admin-pw-input').value = '';
-  document.getElementById('admin-login-error').textContent = '';
+  firebase.auth().signOut().finally(() => {
+    adminAuthed = false;
+    document.getElementById('admin-gate').style.display = 'flex';
+    document.getElementById('admin-content').style.display = 'none';
+    document.getElementById('admin-pw-input').value = '';
+    document.getElementById('admin-login-error').textContent = '';
+  });
 }
 
 function togglePwVisibility() {

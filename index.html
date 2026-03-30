@@ -1593,8 +1593,25 @@ Rory McIlroy,NIR,12,0
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="score-index.js"></script>
 <script>
+// ===================================================
+// FIREBASE
+// ===================================================
+const firebaseConfig = {
+  apiKey:            "AIzaSyAU5sOKWTEGQzdMZbP6LYLohpry6IiKBUY",
+  authDomain:        "pmc-masters-game.firebaseapp.com",
+  projectId:         "pmc-masters-game",
+  storageBucket:     "pmc-masters-game.firebasestorage.app",
+  messagingSenderId: "42309002907",
+  appId:             "1:42309002907:web:a028382382442af9fa883e",
+  measurementId:     "G-GGTTVHVDZV"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 // ===================================================
 // DATA: 2026 Masters Field (total 88 players)
 // Price scale: $30 (pick 1-10)
@@ -2483,7 +2500,12 @@ function publishPlayerRankings() {
   localStorage.setItem('masters_rankings_snapshot', JSON.stringify(snapshot));
   const status = document.getElementById('rankings-publish-status');
   if (status) status.textContent = 'Published at ' + snapshot.updatedAt;
-  toast('Player rankings published ✓', 'success');
+  db.collection('snapshot').doc('rankings').set(snapshot)
+    .then(() => toast('Player rankings published ✓', 'success'))
+    .catch(err => {
+      console.error('Firestore write failed:', err);
+      toast('Published locally — cloud sync failed', 'warning');
+    });
 }
 
 // ===================================================

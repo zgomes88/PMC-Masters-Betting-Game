@@ -554,16 +554,43 @@
 
 </main>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="score-index.js"></script>
 <script>
+const firebaseConfig = {
+  apiKey:            "AIzaSyAU5sOKWTEGQzdMZbP6LYLohpry6IiKBUY",
+  authDomain:        "pmc-masters-game.firebaseapp.com",
+  projectId:         "pmc-masters-game",
+  storageBucket:     "pmc-masters-game.firebasestorage.app",
+  messagingSenderId: "42309002907",
+  appId:             "1:42309002907:web:a028382382442af9fa883e",
+  measurementId:     "G-GGTTVHVDZV"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const STORAGE_KEY = 'masters_rankings_snapshot';
 
-function renderRankings() {
-  const raw   = localStorage.getItem(STORAGE_KEY);
+async function renderRankings() {
   const label = document.getElementById('last-updated-label');
   const tbody = document.getElementById('rankings-tbody');
+  label.textContent = 'Loading…';
 
-  if (!raw) {
+  let snapshot = null;
+  try {
+    const doc = await db.collection('snapshot').doc('rankings').get();
+    if (doc.exists) {
+      snapshot = doc.data();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    }
+  } catch (err) {
+    console.error('Firestore read failed, falling back to localStorage:', err);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) snapshot = JSON.parse(raw);
+  }
+
+  if (!snapshot) {
     label.textContent = 'Not yet published';
     tbody.innerHTML = `
       <tr><td colspan="4">
@@ -580,7 +607,6 @@ function renderRankings() {
     return;
   }
 
-  const snapshot = JSON.parse(raw);
   label.textContent = 'Last updated: ' + snapshot.updatedAt;
 
   // Sort: active players by rank ascending, then cut players alphabetically, then not-yet-played.

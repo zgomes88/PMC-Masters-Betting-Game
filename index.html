@@ -1620,6 +1620,13 @@ db.collection('teams').orderBy('createdAt').onSnapshot(snapshot => {
   if (adminAuthed) renderAdminTeams();
 });
 
+db.collection('snapshot').doc('rankings').onSnapshot(doc => {
+  if (doc.exists) {
+    localStorage.setItem('masters_rankings_snapshot', JSON.stringify(doc.data()));
+    renderLeaderboard();
+  }
+});
+
 // ===================================================
 // DATA: 2026 Masters Field (total 88 players)
 // Price scale: $30 (pick 1-10)

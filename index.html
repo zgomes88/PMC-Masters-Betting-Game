@@ -1613,6 +1613,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// Real-time listener: keeps teams in sync across all browsers
+db.collection('teams').orderBy('createdAt').onSnapshot(snapshot => {
+  teams = snapshot.docs.map(d => d.data());
+  renderLeaderboard();
+  if (adminAuthed) renderAdminTeams();
+});
+
 // ===================================================
 // DATA: 2026 Masters Field (total 88 players)
 // Price scale: $30 (pick 1-10)
@@ -1723,7 +1730,7 @@ function loadPlayers() {
   return DEFAULT_PLAYERS.map(p => ({ ...p, points: pointsMap[p.name] ?? p.points }));
 }
 let players = loadPlayers();
-let teams = JSON.parse(localStorage.getItem('masters_teams') || '[]');
+let teams = [];
 let selectedIds = new Set();
 let filteredPlayers = [...players];
 
@@ -1980,8 +1987,8 @@ function submitTeam() {
     createdAt: new Date().toISOString()
   };
 
-  teams.push(team);
-  saveteams();
+  db.collection('teams').doc(String(team.id)).set(team)
+    .catch(err => { console.error('Failed to save team:', err); toast('Error saving team — please try again', 'error'); });
 
   // Show modal
   document.getElementById('modal-sub-text').textContent = `${teamName} · owned by ${ownerName} · $${totalCost} spent of $${BUDGET}`;
@@ -2266,19 +2273,20 @@ function renderAdminTeams() {
 }
 
 function removeTeam(id) {
-  teams = teams.filter(t => t.id !== id);
-  saveteams();
-  renderAdminTeams();
-  toast('Team removed', 'success');
+  db.collection('teams').doc(String(id)).delete()
+    .then(() => toast('Team removed', 'success'))
+    .catch(() => toast('Error removing team', 'error'));
 }
 
 function clearAllTeams() {
   if (!confirm('Are you sure you want to delete ALL teams? This cannot be undone.')) return;
-  teams = [];
-  saveteams();
-  renderAdminTeams();
-  renderLeaderboard();
-  toast('All teams cleared', 'success');
+  db.collection('teams').get().then(snap => {
+    const batch = db.batch();
+    snap.docs.forEach(d => batch.delete(d.ref));
+    return batch.commit();
+  })
+  .then(() => toast('All teams cleared', 'success'))
+  .catch(() => toast('Error clearing teams', 'error'));
 }
 
 // ===================================================
@@ -2524,9 +2532,6 @@ function publishPlayerRankings() {
 // ===================================================
 // PERSISTENCE
 // ===================================================
-function saveteams() {
-  localStorage.setItem('masters_teams', JSON.stringify(teams));
-}
 
 function savePlayers() {
   localStorage.setItem('masters_players', JSON.stringify(players));

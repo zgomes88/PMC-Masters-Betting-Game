@@ -1697,7 +1697,14 @@ const MAX_PLAYERS = 10;
 // ===================================================
 // STATE
 // ===================================================
-let players = JSON.parse(localStorage.getItem('masters_players') || 'null') || DEFAULT_PLAYERS;
+function loadPlayers() {
+  const stored = JSON.parse(localStorage.getItem('masters_players') || 'null');
+  if (!stored) return DEFAULT_PLAYERS.map(p => ({ ...p }));
+  const pointsMap = {};
+  stored.forEach(p => { pointsMap[p.name] = p.points || 0; });
+  return DEFAULT_PLAYERS.map(p => ({ ...p, points: pointsMap[p.name] ?? p.points }));
+}
+let players = loadPlayers();
 let teams = JSON.parse(localStorage.getItem('masters_teams') || '[]');
 let selectedIds = new Set();
 let filteredPlayers = [...players];

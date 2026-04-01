@@ -783,11 +783,14 @@
     font-size: 1rem;
     font-weight: 600;
     color: var(--green-deep);
-    max-width: 220px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
   }
+
+  .lb-table thead th.col-team { width: 40%; }
+  .lb-table thead th.col-owner { width: 25%; }
+  .lb-table td.col-team { width: 40%; }
+  .lb-table td.col-owner { width: 25%; }
 
   .team-cell .team-email {
     font-family: 'Teko', sans-serif;
@@ -1435,8 +1438,8 @@
           <thead>
             <tr>
               <th>Rank</th>
-              <th>Team</th>
-              <th>Owner</th>
+              <th class="col-team">Team</th>
+              <th class="col-owner">Owner</th>
               <th>Team Score</th>
             </tr>
           </thead>
@@ -2147,8 +2150,8 @@ function renderLeaderboard() {
         : rankNum;
       html += `<tr class="${rankClass}">
         <td class="rank-cell">${rankLabel}</td>
-        <td class="team-cell"><div class="team-name">${escHtml(t.name)}</div></td>
-        <td class="team-cell"><div class="team-name" style="font-weight:400;font-size:0.97rem;">${escHtml(t.ownerName || '—')}</div></td>
+        <td class="team-cell col-team"><div class="team-name">${escHtml(t.name)}</div></td>
+        <td class="team-cell col-owner"><div class="team-name" style="font-weight:400;font-size:0.97rem;">${escHtml(t.ownerName || '—')}</div></td>
         <td class="points-cell">${t.totalScore}</td>
       </tr>`;
     }
